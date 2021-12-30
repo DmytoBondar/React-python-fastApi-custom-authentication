@@ -60,3 +60,14 @@ async def get_current_user(db:_orm.Session = _fastapi.Depends(get_db),token:str=
             status_code=401,detail="invalid email or password"
         )
     return _schemas.User.from_orm(user)
+
+async def create_lead(user:_schemas.User, db:_orm.Session, lead:_schemas.LeadCreate):
+    lead = _models.lead(**lead.dict(), owner_id=user.id)
+    db.add(lead)
+    db.commit()
+    db.refresh(lead)
+    return _schemas.lead.from_orm(lead)
+
+async def get_leads(user:_schemas.User, db:_orm.Session):
+    leads = db.query(_models.Lead).filter_by(owner_id=user.id)
+    return list(map(_schemas.Lead.from_orm, leads))

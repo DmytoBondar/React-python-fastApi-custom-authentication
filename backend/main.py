@@ -33,3 +33,11 @@ async def generate_token(from_data:_security.OAuth2PasswordRequestForm=_fastapi.
 @app.get("api/users/me", response_model=_schemas.User)
 async def get_user(user:_schemas.User=_fastapi.Depends(_services.get_current_user)):
     return user
+
+@app.post("/api/leads", response_model=_schemas.Lead)
+async def create_lead(lead: _schemas.LeadCreate,user:_schemas.User = _fastapi.Depends(_services.get_current_user),db:_orm.Session = _fastapi.Depends(_services.get_db)):
+    return await _services.create_lead(user=user, db=db, lead=lead)
+
+@app.get("/api/leads", response_model=List[_schemas.Lead])
+async def get_leads(user:_schemas.User=_fastapi.Depends(_services.get_current_user),db:_orm.Session = _fastapi.Depends(_services.get_db)):
+    return await _services.get_leads(user=user, db=db)
