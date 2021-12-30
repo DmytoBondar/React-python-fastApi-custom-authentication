@@ -37,3 +37,10 @@ async def create_user(user: _schemas.UserCreate, db: _orm.Session):
     db.refresh(user_obj)
     return user_obj
 
+async def authenticate_user(email:str, password:str, db:_orm.Session):
+    user = await get_user_by_email(db=db, email=email)
+    if not user:
+        return False
+    if not user.verify_password(password):
+        return False
+    return user
